@@ -1,0 +1,78 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    jcenter()
+    mavenLocal()
+  }
+
+  dependencies {
+    classpath "org.elasticsearch.gradle:build-tools:6.5.2"
+  }
+}
+
+group = 'com.o19s'
+version = '1.1.0-es6.5.2'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'elasticsearch.esplugin'
+
+// this is temporal and will be fixed in 6.0
+ext.projectSubstitutions = [:]
+
+// license of this project
+licenseFile = rootProject.file('LICENSE.txt')
+// copyright notices
+noticeFile = rootProject.file('NOTICE.txt')
+
+esplugin {
+  name 'ltr'
+  description 'Learing to Rank Query w/ RankLib Models'
+  classname 'com.o19s.es.LtrQueryParserPlugin'
+  // license of this project
+  licenseFile = rootProject.file('LICENSE.txt')
+  // copyright notices
+  noticeFile = rootProject.file('NOTICE.txt')
+}
+
+
+// In this section you declare the dependencies for your production and test code
+// Note, the two dependencies are not really needed as the buildscript dependency gets them in already
+// they are just here as an example
+repositories {
+    mavenCentral()
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+  compile "org.apache.lucene:lucene-expressions:7.5.0"
+  compile 'org.antlr:antlr4-runtime:4.5.1-1'
+  compile 'org.ow2.asm:asm:5.0.4'
+  compile 'org.ow2.asm:asm-commons:5.0.4'
+  compile 'org.ow2.asm:asm-tree:5.0.4'
+  compile 'org.elasticsearch:elasticsearch:6.5.2'
+  compile 'com.o19s:RankyMcRankFace:0.1.1'
+  compile "com.github.spullara.mustache.java:compiler:0.9.3"
+  testCompile 'org.elasticsearch.test:framework:6.5.2'
+}
+
+dependencyLicenses {
+  mapping from: /lucene-.*/, to: 'lucene'
+  mapping from: /asm-.*/, to: 'asm'
+  mapping from: /Ranky-.*/, to: 'lucene'
+  mapping from: /compiler-.*/, to: 'lucene'
+}
+
+// Set to false to not use elasticsearch checkstyle rules
+checkstyleMain.enabled = true
+checkstyleTest.enabled = true
+
+// FIXME dependency license check needs to be enabled
+dependencyLicenses.enabled = false
+
+// FIXME thirdparty audit needs to be enabled
+thirdPartyAudit.enabled = false
+
+// Uncomment this to skip license header checks
+licenseHeaders.enabled = false

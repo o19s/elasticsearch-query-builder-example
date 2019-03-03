@@ -12,3 +12,8 @@ A plugin for a query builder that searches terms backwards.
 
 ### *Use Dot Env to manage different java environments
 I personally use [dotenv](https://github.com/motdotla/dotenv) to manage different Java versions across my Elasticsearch, Solr, and Lucene development.
+
+## Open in IntelliJ
+
+1. Run `./gradlew idea`
+2. Open (dont import) the directory into IntelliJ

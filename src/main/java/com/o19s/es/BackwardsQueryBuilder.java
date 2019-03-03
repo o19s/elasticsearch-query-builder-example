@@ -82,8 +82,8 @@ public class BackwardsQueryBuilder extends AbstractQueryBuilder<BackwardsQueryBu
 
     @Override
     protected void doWriteTo(StreamOutput out) throws IOException {
-        out.writeString(_field);
         out.writeString(_query);
+        out.writeString(_field);
     }
 
     @Override
@@ -91,6 +91,7 @@ public class BackwardsQueryBuilder extends AbstractQueryBuilder<BackwardsQueryBu
         builder.startObject(NAME);
         printBoostAndQueryName(builder);
         builder.field(QUERY_NAME.getPreferredName(), _query);
+        builder.field(FIELD_NAME.getPreferredName(), _field);
         builder.endObject();
     }
 
@@ -125,7 +126,7 @@ public class BackwardsQueryBuilder extends AbstractQueryBuilder<BackwardsQueryBu
     }
 
     public String field() {
-        return _query;
+        return _field;
     }
 
     public BackwardsQueryBuilder field(String field) {

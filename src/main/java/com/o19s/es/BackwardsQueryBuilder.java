@@ -13,9 +13,9 @@
  *
  */
 
-package com.o19s.es.explore;
+package com.o19s.es;
 
-import com.o19s.es.ltr.utils.AbstractQueryBuilderUtils;
+import com.o19s.es.BackwardsTermQuery;
 import org.apache.lucene.search.Query;
 import org.elasticsearch.common.ParseField;
 import org.elasticsearch.common.ParsingException;
@@ -26,45 +26,43 @@ import org.elasticsearch.common.xcontent.ObjectParser;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.query.AbstractQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryShardContext;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class ExplorerQueryBuilder extends AbstractQueryBuilder<ExplorerQueryBuilder> implements NamedWriteable {
-    public static final String NAME = "match_explorer";
+public class BackwardsQueryBuilder extends AbstractQueryBuilder<BackwardsQueryBuilder> implements NamedWriteable {
+    public static final String NAME = "backwards";
 
     private static final ParseField QUERY_NAME = new ParseField("query");
-    private static final ParseField TYPE_NAME = new ParseField("type");
-    private static final ObjectParser<ExplorerQueryBuilder, Void> PARSER;
+    private static final ParseField FIELD_NAME = new ParseField("field");
+
+    private static final ObjectParser<BackwardsQueryBuilder, Void> PARSER;
 
     static {
-        PARSER = new ObjectParser<>(NAME, ExplorerQueryBuilder::new);
-        PARSER.declareObject(
-                ExplorerQueryBuilder::query,
-                (parser, context) -> parseInnerQueryBuilder(parser),
-                QUERY_NAME
-        );
-        PARSER.declareString(ExplorerQueryBuilder::statsType, TYPE_NAME);
-        AbstractQueryBuilderUtils.declareStandardFields(PARSER);
+        PARSER = new ObjectParser<>(NAME, BackwardsQueryBuilder::new);
+        PARSER.declareString(BackwardsQueryBuilder::query, QUERY_NAME);
+        PARSER.declareString(BackwardsQueryBuilder::field, FIELD_NAME);
+
+
+        AbstractQueryBuilder.declareStandardFields(PARSER);
     }
 
-    private QueryBuilder query;
-    private String type;
+    private String _query;
+    private String _field;
 
-    public ExplorerQueryBuilder() {
+    public BackwardsQueryBuilder() {
     }
 
 
-    public ExplorerQueryBuilder(StreamInput in) throws IOException {
+    public BackwardsQueryBuilder(StreamInput in) throws IOException {
         super(in);
-        query = in.readNamedWriteable(QueryBuilder.class);
-        type = in.readString();
+        _query = in.readString();
+        _field = in.readString();
     }
 
-    public static ExplorerQueryBuilder fromXContent(XContentParser parser) throws IOException {
-        final ExplorerQueryBuilder builder;
+    public static BackwardsQueryBuilder fromXContent(XContentParser parser) throws IOException {
+        final BackwardsQueryBuilder builder;
 
         try {
             builder = PARSER.parse(parser, null);
@@ -72,44 +70,44 @@ public class ExplorerQueryBuilder extends AbstractQueryBuilder<ExplorerQueryBuil
             throw new ParsingException(parser.getTokenLocation(), iae.getMessage(), iae);
         }
 
-        if (builder.query == null) {
+        if (builder._query == null) {
             throw new ParsingException(parser.getTokenLocation(), "Field [" + QUERY_NAME + "] is mandatory.");
         }
-        if (builder.statsType() == null) {
-            throw new ParsingException(parser.getTokenLocation(), "Field [" + TYPE_NAME + "] is mandatory.");
+
+        if (builder._field == null) {
+            throw new ParsingException(parser.getTokenLocation(), "Field [" + FIELD_NAME + "] is mandatory.");
         }
         return builder;
     }
 
     @Override
     protected void doWriteTo(StreamOutput out) throws IOException {
-        out.writeNamedWriteable(query);
-        out.writeString(type);
+        out.writeString(_field);
+        out.writeString(_query);
     }
 
     @Override
     protected void doXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject(NAME);
         printBoostAndQueryName(builder);
-        builder.field(QUERY_NAME.getPreferredName(), query);
-        builder.field(TYPE_NAME.getPreferredName(), type);
+        builder.field(QUERY_NAME.getPreferredName(), _query);
         builder.endObject();
     }
 
     @Override
     protected Query doToQuery(QueryShardContext context) throws IOException {
-        return new ExplorerQuery(query.toQuery(context), type);
+        return new BackwardsTermQuery(_field, _query);
     }
 
     @Override
     protected int doHashCode() {
-        return Objects.hash(query, type);
+        return Objects.hash(_query, _field);
     }
 
     @Override
-    protected boolean doEquals(ExplorerQueryBuilder other) {
-        return Objects.equals(query, other.query)
-                && Objects.equals(type, other.type);
+    protected boolean doEquals(BackwardsQueryBuilder other) {
+        return Objects.equals(_query, other._query)
+                && Objects.equals(_field, other._field);
     }
 
     @Override
@@ -117,21 +115,21 @@ public class ExplorerQueryBuilder extends AbstractQueryBuilder<ExplorerQueryBuil
         return NAME;
     }
 
-    public QueryBuilder query() {
-        return query;
+    public String query() {
+        return _query;
     }
 
-    public ExplorerQueryBuilder query(QueryBuilder query) {
-        this.query = query;
+    public BackwardsQueryBuilder query(String query) {
+        this._query = query;
         return this;
     }
 
-    public String statsType() {
-        return type;
+    public String field() {
+        return _query;
     }
 
-    public ExplorerQueryBuilder statsType(String type) {
-        this.type = type;
+    public BackwardsQueryBuilder field(String field) {
+        this._field = field;
         return this;
     }
 }

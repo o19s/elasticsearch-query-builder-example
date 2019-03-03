@@ -26,9 +26,9 @@ licenseFile = rootProject.file('LICENSE.txt')
 noticeFile = rootProject.file('NOTICE.txt')
 
 esplugin {
-  name 'ltr'
-  description 'Learing to Rank Query w/ RankLib Models'
-  classname 'com.o19s.es.LtrQueryParserPlugin'
+  name 'backwards'
+  description 'Parse query terms backwards'
+  classname 'com.o19s.es.BackwardsQueryParserPlugin'
   // license of this project
   licenseFile = rootProject.file('LICENSE.txt')
   // copyright notices
